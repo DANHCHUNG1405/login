@@ -1,0 +1,106 @@
+/* Container */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  background: url("../assets/bg.jpg") no-repeat center center;
+  background-size: cover;
+  padding: 20px;
+}
+
+/* Logo */
+.logo {
+  width: 250px;
+  max-width: 30vw;
+}
+
+/* Form container */
+.login-form {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #ccc;
+  padding: 30px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 300px;
+  max-width: 400px;
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Form title */
+.form-title {
+  color: #7b5cf3;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Inputs */
+.form-input {
+  padding: 12px;
+  border: 1px solid #888;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #7b5cf3; /* purple */
+  box-shadow: 0 0 0 2px rgba(123, 92, 243, 0.3);
+}
+
+/* Button */
+.form-button {
+  padding: 12px;
+  background: linear-gradient(90deg, #a78bfa, #7c3aed);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* Switch login/signup text */
+.switch-text {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.switch-link {
+  color: #a78bfa;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.switch-link:hover {
+  text-decoration: underline;
+}
+/* Style input text */
+input,
+textarea {
+  color: #000 !important; /* chữ đen */
+  background-color: #fff !important; /* nền trắng */
+  border: 1px solid #ccc !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+}
+
+/* Placeholder có màu nhạt hơn */
+input::placeholder,
+textarea::placeholder {
+  color: #999 !important;
+}

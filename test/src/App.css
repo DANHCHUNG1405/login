@@ -1,0 +1,93 @@
+/* Container chính */
+.container {
+  max-width: 700px;
+  margin: 50px auto;
+  font-family: Arial, sans-serif;
+}
+
+/* Tiêu đề */
+.container h1 {
+  text-align: center;
+  color: #333;
+}
+
+/* Form thêm/sửa người dùng */
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.user-form input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Button form */
+.user-form .btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.user-form .btn-add {
+  background-color: #4caf50;
+}
+
+.user-form .btn-cancel {
+  background-color: #f44336;
+}
+
+.user-form .btn-container {
+  display: flex;
+  gap: 10px;
+}
+
+/* Danh sách người dùng */
+.user-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.user-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Button trong danh sách */
+.user-list button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.user-list .btn-edit {
+  background-color: #2196f3;
+}
+
+.user-list .btn-delete {
+  background-color: #f44336;
+}
+.button-group {
+  display: flex;
+  gap: 10px; /* Khoảng cách giữa các button */
+}
