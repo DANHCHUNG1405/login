@@ -6,23 +6,21 @@ import { pool } from "../db.js";
 const router = express.Router();
 
 // -------------------- SIGN UP --------------------
+// SIGN UP
 router.post("/signup", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.body; // <-- đổi fullName -> name
 
   if (!name || !email || !password)
     return res.status(400).json({ message: "All fields are required" });
 
   try {
-    // Kiểm tra email đã tồn tại chưa
     const userExists = await pool.query(
       "SELECT * FROM chung_user WHERE email=$1",
       [email]
     );
-    if (userExists.rows.length > 0) {
+    if (userExists.rows.length > 0)
       return res.status(400).json({ message: "Email already exists" });
-    }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
@@ -37,7 +35,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// -------------------- LOGIN --------------------
+// LOGIN
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -49,20 +47,16 @@ router.post("/login", async (req, res) => {
       email,
     ]);
     const user = result.rows[0];
-    console.log("User from DB:", user);
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    // Tạo JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
-      }
+      { expiresIn: "1d" }
     );
 
     res.json({

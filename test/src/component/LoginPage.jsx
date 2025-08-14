@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     const credentials =
       currState === "Sign up"
-        ? { fullName, email, password }
+        ? { name: fullName, email, password } // <-- gửi name, không fullName
         : { email, password };
 
     const result = await login(

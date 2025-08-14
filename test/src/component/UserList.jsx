@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import "./UserList.css"; // import file css
+import "./UserList.css";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function UserList() {
   const [users, setUsers] = useState([]);
@@ -10,6 +12,9 @@ function UserList() {
     password: "",
   });
   const [editingUser, setEditingUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // state cho tìm kiếm
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const fetchUsers = () => {
     axios
@@ -21,6 +26,11 @@ function UserList() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -57,9 +67,29 @@ function UserList() {
     });
   };
 
+  // Lọc người dùng dựa trên searchTerm
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="container">
+      <button onClick={handleLogout} className="logout-button">
+        Đăng xuất
+      </button>
+
       <h1>Quản lý người dùng</h1>
+
+      {/* Thanh tìm kiếm */}
+      <input
+        type="text"
+        placeholder="Tìm kiếm theo tên hoặc email..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-input"
+      />
 
       <form onSubmit={handleSubmit} className="user-form">
         <input
@@ -105,12 +135,11 @@ function UserList() {
       </form>
 
       <ul className="user-list">
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <li key={user.id}>
             <div>
               <strong>ID:</strong> {user.id} | <strong>Name:</strong>{" "}
-              {user.name} | <strong>Email:</strong> {user.email} |{" "}
-              <strong>Password:</strong> {user.password}
+              {user.name} | <strong>Email:</strong> {user.email}
             </div>
             <div className="button-group">
               <button className="btn-edit" onClick={() => handleEdit(user)}>
