@@ -10,9 +10,12 @@ function UserList() {
     name: "",
     email: "",
     password: "",
+    gender: "",
+    age: "",
+    hometown: "",
   });
   const [editingUser, setEditingUser] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // state cho tìm kiếm
+  const [searchTerm, setSearchTerm] = useState("");
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -34,27 +37,57 @@ function UserList() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const config = { withCredentials: true };
+
     if (editingUser) {
       axios
-        .put(`http://localhost:5000/users/${editingUser.id}`, formData)
+        .put(`http://localhost:5000/users/${editingUser.id}`, formData, config)
         .then(() => {
           fetchUsers();
-          setFormData({ name: "", email: "", password: "" });
-          setEditingUser(null);
+          resetForm();
+        })
+        .catch((err) => {
+          alert(
+            err.response?.data?.message || "Có lỗi xảy ra khi sửa người dùng"
+          );
         });
     } else {
-      axios.post("http://localhost:5000/users", formData).then(() => {
-        fetchUsers();
-        setFormData({ name: "", email: "", password: "" });
-      });
+      axios
+        .post("http://localhost:5000/users", formData, config)
+        .then(() => {
+          fetchUsers();
+          resetForm();
+        })
+        .catch((err) => {
+          alert(
+            err.response?.data?.message || "Có lỗi xảy ra khi thêm người dùng"
+          );
+        });
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      gender: "",
+      age: "",
+      hometown: "",
+    });
+    setEditingUser(null);
   };
 
   const handleDelete = (id) => {
     if (window.confirm("Bạn có chắc muốn xóa người dùng này?")) {
       axios
-        .delete(`http://localhost:5000/users/${id}`)
-        .then(() => fetchUsers());
+        .delete(`http://localhost:5000/users/${id}`, { withCredentials: true })
+        .then(() => fetchUsers())
+        .catch((err) => {
+          alert(
+            err.response?.data?.message || "Có lỗi xảy ra khi xóa người dùng"
+          );
+        });
     }
   };
 
@@ -64,10 +97,12 @@ function UserList() {
       name: user.name,
       email: user.email,
       password: user.password,
+      gender: user.gender || "",
+      age: user.age || "",
+      hometown: user.hometown || "",
     });
   };
 
-  // Lọc người dùng dựa trên searchTerm
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -82,7 +117,6 @@ function UserList() {
 
       <h1>Quản lý người dùng</h1>
 
-      {/* Thanh tìm kiếm */}
       <input
         type="text"
         placeholder="Tìm kiếm theo tên hoặc email..."
@@ -115,6 +149,30 @@ function UserList() {
           }
           required
         />
+        <select
+          value={formData.gender}
+          onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+          required
+        >
+          <option value="">-- Chọn giới tính --</option>
+          <option value="male">Nam</option>
+          <option value="female">Nữ</option>
+          <option value="other">Khác</option>
+        </select>
+        <input
+          type="number"
+          placeholder="Age"
+          value={formData.age}
+          onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Hometown"
+          value={formData.hometown}
+          onChange={(e) =>
+            setFormData({ ...formData, hometown: e.target.value })
+          }
+        />
         <div className="btn-container">
           <button type="submit" className="btn btn-add">
             {editingUser ? "Cập nhật" : "Thêm mới"}
@@ -123,10 +181,7 @@ function UserList() {
             <button
               type="button"
               className="btn btn-cancel"
-              onClick={() => {
-                setEditingUser(null);
-                setFormData({ name: "", email: "", password: "" });
-              }}
+              onClick={resetForm}
             >
               Hủy
             </button>
@@ -139,7 +194,9 @@ function UserList() {
           <li key={user.id}>
             <div>
               <strong>ID:</strong> {user.id} | <strong>Name:</strong>{" "}
-              {user.name} | <strong>Email:</strong> {user.email}
+              {user.name} | <strong>Email:</strong> {user.email} |{" "}
+              <strong>Gender:</strong> {user.gender} | <strong>Age:</strong>{" "}
+              {user.age} | <strong>Hometown:</strong> {user.hometown}
             </div>
             <div className="button-group">
               <button className="btn-edit" onClick={() => handleEdit(user)}>

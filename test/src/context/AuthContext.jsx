@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 
@@ -7,29 +8,24 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
 
-  // Khi load app, check localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
-    if (storedUser && storedToken) {
+    const cookieToken = Cookies.get("token");
+    const storedUser = Cookies.get("user");
+    if (cookieToken && storedUser) {
+      setToken(cookieToken);
       setUser(JSON.parse(storedUser));
-      setToken(storedToken);
     }
   }, []);
 
   const login = async (type, credentials) => {
     try {
       let res;
+      console.log(credentials);
       if (type === "signup") {
         res = await axios.post(
           "http://localhost:5000/auth/signup",
           credentials
         );
-        // Sau signup tự login luôn
-        res = await axios.post("http://localhost:5000/auth/login", {
-          email: credentials.email,
-          password: credentials.password,
-        });
       } else {
         res = await axios.post("http://localhost:5000/auth/login", credentials);
       }
@@ -38,9 +34,8 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       setToken(token);
 
-      // Lưu vào localStorage
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", token);
+      Cookies.set("token", token, { expires: 1 });
+      Cookies.set("user", JSON.stringify(user), { expires: 1 });
 
       return { success: true };
     } catch (err) {
@@ -55,8 +50,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    Cookies.remove("token");
+    Cookies.remove("user");
   };
 
   return (

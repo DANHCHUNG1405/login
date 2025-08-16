@@ -2,17 +2,17 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { pool } from "../db.js";
-
 const router = express.Router();
 
-// -------------------- SIGN UP --------------------
 // SIGN UP
 router.post("/signup", async (req, res) => {
-  const { name, email, password } = req.body; // <-- đổi fullName -> name
-
+  const { name, email, password } = req.body;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!name || !email || !password)
     return res.status(400).json({ message: "All fields are required" });
-
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
   try {
     const userExists = await pool.query(
       "SELECT * FROM chung_user WHERE email=$1",
@@ -28,7 +28,22 @@ router.post("/signup", async (req, res) => {
       [name, email, hashedPassword]
     );
 
-    res.status(201).json({ message: "User created", user: result.rows[0] });
+    // Tự động login sau signup
+    const token = jwt.sign(
+      { id: result.rows[0].id, email: result.rows[0].email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    // Lưu token vào cookie
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 ngày
+        sameSite: "lax",
+      })
+      .status(201)
+      .json({ message: "User created", user: result.rows[0], token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -59,11 +74,18 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.json({
-      message: "Login successful",
-      user: { id: user.id, name: user.name, email: user.email },
-      token,
-    });
+    // Lưu token vào cookie
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 ngày
+        sameSite: "lax",
+      })
+      .json({
+        message: "Login successful",
+        user: { id: user.id, name: user.name, email: user.email },
+        token,
+      });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

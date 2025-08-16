@@ -4,11 +4,20 @@ import dotenv from "dotenv";
 import { pool } from "./db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import cookieParser from "cookie-parser";
+
 dotenv.config();
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:5173", // Thay đổi thành domain của front-end
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Cho phép gửi cookies và các thông tin xác thực
+  optionsSuccessStatus: 204, // Hoặc 200 tùy thuộc vào phiên bản Express
+};
+app.use(cors(corsOptions));
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 // Routes CRUD sẵn có
 // route bạn đã viết
 app.use("/users", userRoutes);

@@ -1,14 +1,17 @@
 import express from "express";
 import { pool } from "../db.js";
+import { verifyToken } from "../middleware/auth.js"; // Import middleware
 
 const router = express.Router();
 
 // Lấy danh sách tất cả người dùng
+// Route này không cần xác thực
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, name, email FROM chung_user ORDER BY id ASC"
+      "SELECT id, name, email, gender, age, hometown FROM chung_user ORDER BY id ASC"
     );
+
     res.json(result.rows);
   } catch (error) {
     console.error(error);
@@ -17,7 +20,8 @@ router.get("/", async (req, res) => {
 });
 
 // Thêm người dùng mới
-router.post("/", async (req, res) => {
+// Chỉ cho phép người dùng đã đăng nhập thực hiện
+router.post("/", verifyToken, async (req, res) => {
   const { name, email, password } = req.body;
   try {
     const result = await pool.query(
@@ -32,7 +36,8 @@ router.post("/", async (req, res) => {
 });
 
 // Sửa người dùng
-router.put("/:id", async (req, res) => {
+// Chỉ cho phép người dùng đã đăng nhập thực hiện
+router.put("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
   const { name, email, password } = req.body;
   try {
@@ -50,7 +55,8 @@ router.put("/:id", async (req, res) => {
 });
 
 // Xóa người dùng
-router.delete("/:id", async (req, res) => {
+// Chỉ cho phép người dùng đã đăng nhập thực hiện
+router.delete("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
